@@ -1,0 +1,40 @@
+{
+  "name": "safario",
+  "version": "1.0.0",
+  "description": "this is a safario app where you can find your mechnaic for car wash ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "Sachin",
+  "license": "ISC",
+  "dependencies": {
+    "@walkover/msg91": "^0.1.2",
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "bull": "^4.16.4",
+    "cors": "^2.8.5",
+    "country-state-city": "^3.2.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-validator": "^7.2.0",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.2.0",
+    "google-auth-library": "^9.15.0",
+    "html-pdf": "^3.0.1",
+    "html-pdf-node": "^1.0.8",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "mongoose": "^8.4.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.4",
+    "number-to-words": "^1.2.4",
+    "pdfkit": "^0.15.0",
+    "puppeteer": "^23.4.1",
+    "razorpay": "^2.9.5",
+    "transliteration": "^2.3.5",
+    "uuid": "^9.0.1"
+  }
+}
