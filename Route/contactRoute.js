@@ -12,5 +12,5 @@ router.route("/").get(ContactController.GetAllContact);
 
 router.route("/:id").patch(ContactController.Updatecontact);
 
-
+router.delete('/:id', ContactController.DeleteContact);
 module.exports=router

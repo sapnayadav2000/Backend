@@ -3,15 +3,16 @@
 const express = require('express');
 const router = express.Router();
 const ReturnController= require('../Controller/returnController');
-
+const {isAuth} = require('../Middleware/auth');
+const {isAdmin}= require('../Middleware/auth');
 // Endpoint to request a return
 router.post('/request-return',ReturnController. requestReturn);
 
 
 
-router.get('/',ReturnController. GetAll);
-router.patch('/:id', ReturnController.updateReturn);
+router.get('/',isAdmin,ReturnController. GetAll);
+router.patch('/:id',isAdmin, ReturnController.updateReturn);
 
-router.delete('/:returnId', ReturnController.deleteReturn);
+router.delete('/:returnId',isAdmin, ReturnController.deleteReturn);
 
 module.exports = router;

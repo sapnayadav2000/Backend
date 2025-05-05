@@ -8,17 +8,17 @@ const {isAdmin}=require('../Middleware/auth')
 router.route("/").post(isAuth,multer.uploadHandler,ReviewController.CreateReview);
 
 
-router.route("/product/:productId").get(multer.uploadHandler,ReviewController.GetReviewProduct);
+router.route("/product/:productId").get(isAdmin,multer.uploadHandler,ReviewController.GetReviewProduct);
 
 
 
 
-router.route("/").get(multer.uploadHandler,ReviewController.GetAllReview);
-router.route("/:id").patch(multer.uploadHandler, ReviewController.UpdateReview) ; // Update review by ID
+router.route("/").get(isAdmin,multer.uploadHandler,ReviewController.GetAllReview);
+router.route("/:id").patch(isAdmin,multer.uploadHandler, ReviewController.UpdateReview) ; // Update review by ID
 
 // Delete a specific review
 router.route("/:id")
-  .delete(ReviewController.DeleteReview)
+  .delete(isAdmin,ReviewController.DeleteReview)
 
   router.route("/").delete(ReviewController.deletedReviewimage);
 

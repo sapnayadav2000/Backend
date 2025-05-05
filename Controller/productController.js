@@ -16,6 +16,9 @@ exports.CreateProduct = async (req, res) => {
       req.body.productkey = JSON.parse(req.body.productkey);
     }
     
+    if (req.body.refundPolicies) {
+      req.body.refundPolicies = JSON.parse(req.body.refundPolicies);
+    }
 
     // Fetch Category, SubCategory, and Brand Names
     const categoryDocs = await Category.find({
@@ -51,7 +54,7 @@ exports.GetAllProduct = async (req, res) => {
   try {
     const product = await Product.find().populate("category") // Populate category field, only returning 'name'
     .populate("subCategory") // Populate subcategory field, only returning 'name'
-    .populate("brand")
+  
 
     .sort({ createdAt: -1 });
 
