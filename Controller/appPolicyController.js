@@ -1,9 +1,22 @@
-const AppPolicy=require('../Model/appPolicy');
+const AppPolicy = require("../Model/appPolicy");
 
 exports.createAppPolicy = async (req, res) => {
   try {
-    const { about,  aboutHindi,  aboutTitle,aboutTitleHindi, termsAndCondition,termsAndConditionHindi, 
-      termsAndConditionTitle, termsAndConditionTitleHindi, privacyPolicy, privacyPolicyHindi,privacyPolicyTitle,privacyPolicyTitleHindi, status } = req.body;
+    const {
+      about,
+      aboutHindi,
+      aboutTitle,
+      aboutTitleHindi,
+      termsAndCondition,
+      termsAndConditionHindi,
+      termsAndConditionTitle,
+      termsAndConditionTitleHindi,
+      privacyPolicy,
+      privacyPolicyHindi,
+      privacyPolicyTitle,
+      privacyPolicyTitleHindi,
+      status,
+    } = req.body;
 
     const newPolicy = new AppPolicy({
       about,
@@ -43,7 +56,9 @@ exports.getAppPolicy = async (req, res) => {
     const appPolicy = await AppPolicy.findOne(); // Get the first document
 
     if (!appPolicy) {
-      return res.status(404).json({ status: false, message: "No App Policy found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "No App Policy found" });
     }
 
     let responseData = {};
@@ -52,27 +67,27 @@ exports.getAppPolicy = async (req, res) => {
       responseData = {
         English: appPolicy.privacyPolicy || "No data",
         Title: appPolicy.privacyPolicyTitle || "No title",
-          Hindi:appPolicy.privacyPolicyHindi||"No data",
-         HindiTitle:appPolicy.privacyPolicyTitleHindi||"No data"
+        Hindi: appPolicy.privacyPolicyHindi || "No data",
+        HindiTitle: appPolicy.privacyPolicyTitleHindi || "No data",
       };
     } else if (req.query.data === "termsAndCondition") {
       responseData = {
         English: appPolicy.termsAndCondition || "No data",
         Title: appPolicy.termsAndConditionTitle || "No title",
-          Hindi:appPolicy.termsAndConditionHindi||"No data",
-         HindiTitle:appPolicy.termsAndConditionTitleHindi||"No data"
+        Hindi: appPolicy.termsAndConditionHindi || "No data",
+        HindiTitle: appPolicy.termsAndConditionTitleHindi || "No data",
       };
     } else if (req.query.data === "about") {
       responseData = {
         English: appPolicy.about || "No data",
         Title: appPolicy.aboutTitle || "No title",
-        Hindi:appPolicy.aboutHindi||"No data",
-         HindiTitle:appPolicy.aboutTitleHindi||"No data"
-      
-        
+        Hindi: appPolicy.aboutHindi || "No data",
+        HindiTitle: appPolicy.aboutTitleHindi || "No data",
       };
     } else {
-      return res.status(400).json({ status: false, message: "Invalid query parameter" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid query parameter" });
     }
 
     res.status(200).json({
@@ -90,16 +105,41 @@ exports.getAppPolicy = async (req, res) => {
   }
 };
 
-
 exports.updateAppPolicy = async (req, res) => {
   try {
-    const {about,  aboutHindi,  aboutTitle,aboutTitleHindi, termsAndCondition,termsAndConditionHindi, 
-      termsAndConditionTitle, termsAndConditionTitleHindi, privacyPolicy, privacyPolicyHindi,privacyPolicyTitle,privacyPolicyTitleHindi, status} = req.body;
+    const {
+      about,
+      aboutHindi,
+      aboutTitle,
+      aboutTitleHindi,
+      termsAndCondition,
+      termsAndConditionHindi,
+      termsAndConditionTitle,
+      termsAndConditionTitleHindi,
+      privacyPolicy,
+      privacyPolicyHindi,
+      privacyPolicyTitle,
+      privacyPolicyTitleHindi,
+      status,
+    } = req.body;
 
     const updatedPolicy = await AppPolicy.findOneAndUpdate(
       {},
-      { about,  aboutHindi,  aboutTitle,aboutTitleHindi, termsAndCondition,termsAndConditionHindi, 
-        termsAndConditionTitle, termsAndConditionTitleHindi, privacyPolicy, privacyPolicyHindi,privacyPolicyTitle,privacyPolicyTitleHindi, status},
+      {
+        about,
+        aboutHindi,
+        aboutTitle,
+        aboutTitleHindi,
+        termsAndCondition,
+        termsAndConditionHindi,
+        termsAndConditionTitle,
+        termsAndConditionTitleHindi,
+        privacyPolicy,
+        privacyPolicyHindi,
+        privacyPolicyTitle,
+        privacyPolicyTitleHindi,
+        status,
+      },
       { new: true, upsert: true }
     );
 

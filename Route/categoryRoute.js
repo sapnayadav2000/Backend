@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const categoryController = require("../Controller/categoryController");
-
+const { isAdmin } = require("../Middleware/auth");
 const multer = require("../Multer/multer");
 
 router

@@ -8,7 +8,7 @@ const {isAdmin}=require('../Middleware/auth')
 router.route("/").post(isAuth,multer.uploadHandler,ReviewController.CreateReview);
 
 
-router.route("/product/:productId").get(isAdmin,multer.uploadHandler,ReviewController.GetReviewProduct);
+router.route("/product/:productId").get(isAuth,multer.uploadHandler,ReviewController.GetReviewProduct);
 
 
 

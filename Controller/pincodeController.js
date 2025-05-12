@@ -6,13 +6,17 @@ exports.createPincode = async (req, res) => {
 
     const exists = await Pincode.findOne({ pincode });
     if (exists) {
-      return res.status(400).json({ status: false, message: "Pincode already exists" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Pincode already exists" });
     }
 
     const newPincode = new Pincode({ pincode, city, state, country });
     await newPincode.save();
 
-    res.status(201).json({ status: true, message: "Pincode created", data: newPincode });
+    res
+      .status(201)
+      .json({ status: true, message: "Pincode created", data: newPincode });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
@@ -31,7 +35,9 @@ exports.getPincodeById = async (req, res) => {
   try {
     const pincode = await Pincode.findById(req.params.id);
     if (!pincode) {
-      return res.status(404).json({ status: false, message: "Pincode not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Pincode not found" });
     }
     res.status(200).json({ status: true, data: pincode });
   } catch (err) {
@@ -41,11 +47,17 @@ exports.getPincodeById = async (req, res) => {
 
 exports.updatePincode = async (req, res) => {
   try {
-    const updated = await Pincode.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await Pincode.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!updated) {
-      return res.status(404).json({ status: false, message: "Pincode not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Pincode not found" });
     }
-    res.status(200).json({ status: true, message: "Pincode updated", data: updated });
+    res
+      .status(200)
+      .json({ status: true, message: "Pincode updated", data: updated });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
@@ -55,7 +67,9 @@ exports.deletePincode = async (req, res) => {
   try {
     const deleted = await Pincode.findByIdAndDelete(req.params.id);
     if (!deleted) {
-      return res.status(404).json({ status: false, message: "Pincode not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Pincode not found" });
     }
     res.status(200).json({ status: true, message: "Pincode deleted" });
   } catch (err) {
@@ -67,9 +81,13 @@ exports.checkPincode = async (req, res) => {
   try {
     const exists = await Pincode.findOne({ pincode });
     if (exists) {
-      res.status(200).json({ status: true, message: "Pincode is serviceable." });
+      res
+        .status(200)
+        .json({ status: true, message: "Pincode is serviceable." });
     } else {
-      res.status(404).json({ status: false, message: "Pincode not serviceable." });
+      res
+        .status(404)
+        .json({ status: false, message: "Pincode not serviceable." });
     }
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });

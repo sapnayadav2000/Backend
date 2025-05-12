@@ -11,7 +11,7 @@ const subCategoryRouter = require("./Route/subCategoryRoute");
 const productRoute = require("./Route/productRoute");
 const brandRoute = require("./Route/brandRoute");
 const useraddressRoute = require("./Route/userAddressRoute");
-const productdetailsRoute = require("./Route/productDetailsRoute");
+
 const AppPolicy=require('./Route/appPolicyRoute');
 const blogRoute=require('./Route/blogRoute');
 const cartRoute=require('./Route/cartRoute');
@@ -24,6 +24,7 @@ const Orders=require('./Route/ordersRoute')
 const contactRoute=require('./Route/contactRoute');
 const ReviewRoute=require('./Route/reviewRoute')
 const TicketRoute=require('./Route/ticketRoute')
+require('dotenv').config();
 app.use(cors());
 app.use(express.urlencoded({ extended: true })); 
 app.use("/Uploads", express.static(path.join(__dirname, "Uploads")));
@@ -37,11 +38,11 @@ app.use("/api/subcategory", subCategoryRouter);
 app.use("/api/brand", brandRoute);
 app.use("/api/product", productRoute);
 app.use("/api/address", useraddressRoute);
-app.use("/api/productdetails", productdetailsRoute);
+
 app.use('/api/policy',AppPolicy)
 app.use('/api/blog',blogRoute);
 app.use('/api/wishlist',wishlistRoute);
-// app.use('/api/order',orderRoute);
+
 
 app.use("/api/pincodes", pincodeRoutes);
 app.use('/api/cart',cartRoute);

@@ -8,7 +8,7 @@ const TempOrderSchema = new mongoose.Schema({
   },
   sessionId: {
     type: String,
-    required: true,
+  
     trim: true
   },
   firstName: {

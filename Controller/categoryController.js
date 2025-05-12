@@ -17,7 +17,9 @@ exports.UpdateCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return res.status(404).json({ status: false, message: "Category Not Found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Category Not Found" });
     }
 
     // Handle image update
@@ -51,7 +53,6 @@ exports.UpdateCategory = async (req, res) => {
 };
 
 exports.DeleteCategory = async (req, res) => {
- 
   try {
     const categoryId = req.params.id;
     const category = await Category.findByIdAndDelete(categoryId);
@@ -82,7 +83,6 @@ exports.DeleteCategory = async (req, res) => {
 };
 
 exports.GetAllCategory = async (req, res) => {
- 
   try {
     const category = await Category.find().sort({ createdAt: -1 });
     if (category.length == 0) {
@@ -90,20 +90,17 @@ exports.GetAllCategory = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Category Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Category Fetch Successfully ",
-        data: category,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Category Fetch Successfully ",
+      data: category,
+    });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
 };
 
 exports.GetByIdCategory = async (req, res) => {
- 
   try {
     const id = req.params.id;
     const category = await Category.findById(id);
@@ -112,13 +109,11 @@ exports.GetByIdCategory = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Category Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "category Fetch Successfully",
-        data: category,
-      });
+    res.status(200).json({
+      status: true,
+      message: "category Fetch Successfully",
+      data: category,
+    });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }

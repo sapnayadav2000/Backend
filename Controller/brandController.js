@@ -20,7 +20,9 @@ exports.UpdateBrand = async (req, res) => {
   try {
     const brand = await Brand.findById(req.params.id);
     if (!brand) {
-      return res.status(404).json({ status: false, message: "Brand Not Found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Brand Not Found" });
     }
 
     // Handle image update
@@ -53,7 +55,6 @@ exports.UpdateBrand = async (req, res) => {
   }
 };
 
-
 exports.GetAllBrand = async (req, res) => {
   try {
     const brand = await Brand.find().sort({ createdAt: -1 });
@@ -64,13 +65,11 @@ exports.GetAllBrand = async (req, res) => {
         .json({ status: false, message: "Brand Not Found" });
     }
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Brand Fetch Successfully ",
-        data: brand,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Brand Fetch Successfully ",
+      data: brand,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: false, error: err.message });
@@ -101,13 +100,11 @@ exports.DeleteBrand = async (req, res) => {
     }
     await Brand.findByIdAndDelete(req.params.id);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "brand  Delete Successfuly  ",
-        data: brand,
-      });
+    res.status(200).json({
+      status: true,
+      message: "brand  Delete Successfuly  ",
+      data: brand,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: false, error: err.message });
@@ -115,8 +112,6 @@ exports.DeleteBrand = async (req, res) => {
 };
 
 exports.GetByIdBrand = async (req, res) => {
-
-
   try {
     const { id } = req.params;
     const brand = await Brand.findById(id);
@@ -126,13 +121,11 @@ exports.GetByIdBrand = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Brand  Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: " Brand Fetch Successfully ",
-        data: brand,
-      });
+    res.status(200).json({
+      status: true,
+      message: " Brand Fetch Successfully ",
+      data: brand,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: false, error: err.message });

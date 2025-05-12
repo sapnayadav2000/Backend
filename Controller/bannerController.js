@@ -25,13 +25,11 @@ exports.getAll = async (req, res) => {
         .json({ status: false, message: "Banner Not Found" });
     }
 
-    res
-      .status(200)
-      .json({
-        status: "true",
-        message: "Banner Fetch Successfully",
-        data: banner,
-      });
+    res.status(200).json({
+      status: "true",
+      message: "Banner Fetch Successfully",
+      data: banner,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: false, error: err.message });
@@ -39,8 +37,6 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-
-
   try {
     const { id } = req.params;
     const banner = await Banner.findById(id);
@@ -50,13 +46,11 @@ exports.getById = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Banner Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Banner Fetch Successfully",
-        data: banner,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Banner Fetch Successfully",
+      data: banner,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: false, error: err.message });
@@ -87,13 +81,11 @@ exports.delete = async (req, res) => {
     }
     await Banner.findByIdAndDelete(req.params.id);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Banner Delete Successfuly",
-        data: banner,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Banner Delete Successfuly",
+      data: banner,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: false, error: err.message });
@@ -103,7 +95,9 @@ exports.update = async (req, res) => {
   try {
     const banner = await Banner.findById(req.params.id);
     if (!banner) {
-      return res.status(404).json({ status: false, message: "Banner Not Found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Banner Not Found" });
     }
 
     // Handle image update

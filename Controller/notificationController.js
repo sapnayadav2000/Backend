@@ -6,13 +6,11 @@ exports.createNotification = async (req, res) => {
   try {
     req.body.image = `Uploads/${req.file?.filename}`;
     const notification = await Notification.create(req.body);
-    res
-      .status(201)
-      .json({
-        status: true,
-        message: "Notification Created ",
-        data: notification,
-      });
+    res.status(201).json({
+      status: true,
+      message: "Notification Created ",
+      data: notification,
+    });
   } catch (err) {
     res.status(400).json({ status: false, error: err.message });
   }
@@ -26,7 +24,9 @@ exports.getAllNotification = async (req, res) => {
       filter.status = "Active";
     }
 
-    const notification = await Notification.find(filter).sort({ createdAt: -1 });
+    const notification = await Notification.find(filter).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json({
       status: true,
@@ -62,13 +62,11 @@ exports.deleteNotification = async (req, res) => {
     }
     await Notification.findByIdAndDelete(req.params.id);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Notification  Delete Successfuly  ",
-        data: notification,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Notification  Delete Successfuly  ",
+      data: notification,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: false, error: err.message });
@@ -115,8 +113,6 @@ exports.updateNotification = async (req, res) => {
 };
 
 exports.getNotification = async (req, res) => {
- 
-
   try {
     const { id } = req.params;
     const notification = await Notification.findById(id);
@@ -126,13 +122,11 @@ exports.getNotification = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Notification Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Notification Fetch successfully ",
-        data: notification,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Notification Fetch successfully ",
+      data: notification,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: false, error: err.message });

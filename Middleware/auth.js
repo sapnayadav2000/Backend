@@ -163,9 +163,25 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Use the correct JWT secret from the env
+      req.user = decoded;
+    } catch (err) {
+      console.warn("Invalid token (optionalAuth):", err.message);
+    }
+  }
+
+  next(); // Always continue
+};
+
 module.exports = {
   signInToken,
   tokenForVerify,
   isAuth,
-  isAdmin,
+  isAdmin,optionalAuth
 };

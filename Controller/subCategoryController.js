@@ -116,20 +116,17 @@ exports.GetAllSubCategory = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Subcategory Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        messaage: "Subcategory Fetch Successfully",
-        data: SubCat,
-      });
+    res.status(200).json({
+      status: true,
+      messaage: "Subcategory Fetch Successfully",
+      data: SubCat,
+    });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
 };
 
 exports.GetByIdSubCategory = async (req, res) => {
-
   try {
     const id = req.params.id;
     const SubCat = await SubCategory.findById(id);
@@ -138,18 +135,12 @@ exports.GetByIdSubCategory = async (req, res) => {
         .status(404)
         .json({ status: false, message: "Subcategory Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        messaage: "Subcategory Fetch Successfully",
-        data: SubCat,
-      });
+    res.status(200).json({
+      status: true,
+      messaage: "Subcategory Fetch Successfully",
+      data: SubCat,
+    });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
 };
-
-
-
-

@@ -27,7 +27,7 @@ router
 
 router.route('/track/:userId/:orderId').get(orderController.trackOrderDetails);
 
-
+router.route('/verify-payment').post(isAuth, orderController.verifyPayment);
 
 
 

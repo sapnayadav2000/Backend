@@ -1,11 +1,11 @@
 const UserAddress = require("../Model/userAddress");
-const User=require("../Model/user");
+const User = require("../Model/user");
 exports.CreateUserAddress = async (req, res) => {
   try {
-    console.log("Received Data:", req.body);  // ✅ Debugging log
+    console.log("Received Data:", req.body); // ✅ Debugging log
 
     // Use userId instead of user
-  const userId = req.user._id;
+    const userId = req.user._id;
 
     if (!userId) {
       return res
@@ -15,23 +15,47 @@ exports.CreateUserAddress = async (req, res) => {
 
     const userDoc = await User.findById(userId);
     if (!userDoc) {
-      return res
-        .status(404)
-        .json({ status: false, message: "User not found" });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
 
     req.body.username = userDoc.name;
-   console.log('req',req.body)
-    const { firstName, lastName, phone, address, city, state, pincode, country } = req.body;
+    console.log("req", req.body);
+    const {
+      firstName,
+      lastName,
+      phone,
+      address,
+      city,
+      state,
+      pincode,
+      country,
+    } = req.body;
 
-    if ( !firstName || !lastName  ||!phone || !address || !city || !state || !pincode || !country) {
-      return res.status(400).json({ status: false, message: "All fields are required" });
+    if (
+      !firstName ||
+      !lastName ||
+      !phone ||
+      !address ||
+      !city ||
+      !state ||
+      !pincode ||
+      !country
+    ) {
+      return res
+        .status(400)
+        .json({ status: false, message: "All fields are required" });
     }
 
     const newAddress = await UserAddress.create(req.body);
     console.log("Saved Address:", newAddress); // ✅ Debugging log
 
-    res.status(201).json({ status: true, message: "User Address created", data: newAddress });
+    res
+      .status(201)
+      .json({
+        status: true,
+        message: "User Address created",
+        data: newAddress,
+      });
   } catch (err) {
     console.error("Database Error:", err);
     res.status(400).json({ status: false, error: err.message });
@@ -79,11 +103,12 @@ exports.CreateUserAddress = async (req, res) => {
 
 exports.GetAllAddresses = async (req, res) => {
   try {
-    const addresses = await UserAddress.find()
-      .sort({ created: -1 });
+    const addresses = await UserAddress.find().sort({ created: -1 });
 
     if (!addresses.length) {
-      return res.status(200).json({ status: true, message: "No addresses found", data: [] });
+      return res
+        .status(200)
+        .json({ status: true, message: "No addresses found", data: [] });
     }
 
     res.status(200).json({
@@ -97,7 +122,6 @@ exports.GetAllAddresses = async (req, res) => {
 };
 
 exports.DeleteUserAddress = async (req, res) => {
-
   try {
     const id = req.params.id;
     const deletes = await UserAddress.findById(id);
@@ -141,9 +165,7 @@ exports.UpdateUserAddress = async (req, res) => {
   }
 };
 
-
 exports.GetByIdUserAddress = async (req, res) => {
-
   try {
     const id = req.params.id;
     const address = await UserAddress.findById(id);
@@ -153,39 +175,34 @@ exports.GetByIdUserAddress = async (req, res) => {
         .status(404)
         .json({ status: false, messgae: "userAddress Not Found" });
     }
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "userAddress Fetch Successfully",
-        data: address,
-      });
+    res.status(200).json({
+      status: true,
+      message: "userAddress Fetch Successfully",
+      data: address,
+    });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
 };
-
 
 exports.MyAllAddresses = async (req, res) => {
   const userId = req.user._id; // The userId is from the authenticated request
   console.log("User ID from authenticated request:", userId);
   try {
     // Find the user's addresses by userId
-    const addresses = await UserAddress.find({ userId: userId }).select('firstName lastName phone address landmark city state pincode country status');
+    const addresses = await UserAddress.find({ userId: userId }).select(
+      "firstName lastName phone address landmark city state pincode country status"
+    );
 
     if (addresses.length === 0) {
-      return res.status(404).json({ success: false, message: 'No addresses found for this user' });
+      return res
+        .status(404)
+        .json({ success: false, message: "No addresses found for this user" });
     }
 
     return res.status(200).json({ success: true, data: addresses });
   } catch (error) {
-    console.error('Error fetching user addresses:', error);
-    return res.status(500).json({ success: false, message: 'Server Error' });
+    console.error("Error fetching user addresses:", error);
+    return res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-
-
-
-
-
-

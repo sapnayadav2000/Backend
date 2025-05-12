@@ -5,9 +5,12 @@ const AddToCartField = mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
-      required: true
+    
     },
-   
+    sessionId: {
+      type: String, // Optional field for guest users
+      required: false
+    },
     username: {
       type: String 
     },

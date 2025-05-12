@@ -4,14 +4,15 @@ const bcrypt = require("bcrypt");
 const User = require("../Model/user");
 const Product = require("../model/product");
 
-const Order=require("../Model/orders");
+const Order = require("../Model/orders");
 const moment = require("moment");
 
 const path = require("path");
 const fs = require("fs");
 exports.register = async (req, res) => {
   try {
-    const { name, email, mobileNo, userType, city, pincode, password } = req.body;
+    const { name, email, mobileNo, userType, city, pincode, password } =
+      req.body;
 
     if (!name || !email || !mobileNo || !password) {
       return res.status(400).json({
@@ -42,7 +43,6 @@ exports.register = async (req, res) => {
       city,
       pincode,
       password: hashedPassword,
-   
     });
 
     await newUser.save();
@@ -52,7 +52,7 @@ exports.register = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "User registered successfully",
-  
+
       // data: newUser, // Return full user details (excluding password if needed)
       token,
     });
@@ -64,20 +64,27 @@ exports.register = async (req, res) => {
   }
 };
 
-
 exports.login = async (req, res) => {
   try {
     const { mobileOrEmail, password } = req.body;
-    const user = await Admin.findOne({ $or: [{ mobileNo: mobileOrEmail }, { email: mobileOrEmail }] }).select('+password');
+    const user = await Admin.findOne({
+      $or: [{ mobileNo: mobileOrEmail }, { email: mobileOrEmail }],
+    }).select("+password");
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ status: false, error: 'Invalid credentials' });
+      return res
+        .status(400)
+        .json({ status: false, error: "Invalid credentials" });
     }
 
     const token = signInToken(user);
-    res.status(200).json({ status: true, message: 'Login successful', token, data: user });
+    res
+      .status(200)
+      .json({ status: true, message: "Login successful", token, data: user });
   } catch (err) {
-    res.status(500).json({status: false,err: err.message || "Internal Server Error",})
+    res
+      .status(500)
+      .json({ status: false, err: err.message || "Internal Server Error" });
   }
 };
 
@@ -120,14 +127,16 @@ exports.createAdmin = async (req, res) => {
 
     res.status(201).json({ status: true, data: newUser });
   } catch (err) {
-    res.status(500).json({status: false,error: err.message || "Internal Server Error",})
+    res
+      .status(500)
+      .json({ status: false, error: err.message || "Internal Server Error" });
   }
 };
 
 exports.changePassword = async (req, res) => {
   try {
-    const { oldPassword, newPassword,confirmPassword } = req.body;
-    if (!oldPassword || !newPassword|| !confirmPassword)
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (!oldPassword || !newPassword || !confirmPassword)
       return res
         .status(400)
         .json({ error: "Please provide both old and new passwords" });
@@ -144,7 +153,9 @@ exports.changePassword = async (req, res) => {
       .status(200)
       .json({ status: true, message: "Password changed successfully" });
   } catch (err) {
-    res.status(500).json({status: false,error: err.message || "Internal Server Error",})
+    res
+      .status(500)
+      .json({ status: false, error: err.message || "Internal Server Error" });
   }
 };
 
@@ -183,30 +194,31 @@ exports.logOut = async (req, res) => {
 
 exports.updateAdmin = async (req, res) => {
   try {
-      
-      const user =  await Admin.findById(req.params.id);
-      if (!user) return res.status(404).json({ status: false, message: "User Not Found" });
-      Object.assign(user, req.body);
-      await user.save();
-      res.status(200).json({ status: true, data: user });
-    } catch (error) {
-      res.status(400).json({ status: false, error: err.message });
-    }
+    const user = await Admin.findById(req.params.id);
+    if (!user)
+      return res.status(404).json({ status: false, message: "User Not Found" });
+    Object.assign(user, req.body);
+    await user.save();
+    res.status(200).json({ status: true, data: user });
+  } catch (error) {
+    res.status(400).json({ status: false, error: err.message });
+  }
 };
 exports.getProfile = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.id).select('-password'); // Exclude password field
+    const admin = await Admin.findById(req.admin.id).select("-password"); // Exclude password field
 
     if (!admin) {
-        return res.status(404).json({ success: false, message: "admin not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "admin not found" });
     }
 
     res.status(200).json({ success: true, data: admin });
-} catch (err) {
+  } catch (err) {
     console.error("Error fetching profile:", err);
     res.status(500).json({ success: false, message: "Server Error" });
-}
-
+  }
 };
 exports.dashboardTotal = async (req, res) => {
   try {
@@ -215,20 +227,23 @@ exports.dashboardTotal = async (req, res) => {
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
 
-    const OrderPending = await Order.countDocuments({ paymentStatus: "pending" });
-  
-    const OrderShipped = await Order.countDocuments({ orderStatus: "Shipped" });
-    const OrderDelivered = await Order.countDocuments({ orderStatus: "Delivered" });
-    const OrderCancelled = await Order.countDocuments({ orderStatus: "Cancel" });
-   
+    const OrderPending = await Order.countDocuments({
+      paymentStatus: "pending",
+    });
+
+    const OrderReturn = await Order.countDocuments({ orderStatus: "Return" });
+    const OrderDelivered = await Order.countDocuments({
+      orderStatus: "Delivered",
+    });
+    const OrderCancelled = await Order.countDocuments({
+      orderStatus: "Cancel",
+    });
 
     const COD = await Order.countDocuments({ paymentMethod: "COD" });
- 
-    const PAYUMONEY = await Order.countDocuments({ paymentMethod: 'PAYUMONEY' });
-    const BINANCE = await Order.countDocuments({ paymentMethod:  'BINANCE' });
-    const CREDIT_CARD = await Order.countDocuments({ paymentMethod:'CREDIT_CARD' });
+    const razorPay = await Order.countDocuments({ paymentMethod: "razorPay" });
+
     const totalAmountData = await Order.aggregate([
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
     const totalAmount = totalAmountData[0]?.total || 0;
 
@@ -237,16 +252,16 @@ exports.dashboardTotal = async (req, res) => {
     const monthlyOrdersData = await Order.aggregate([
       {
         $match: {
-          createdAt: { $gte: monthlyStart.toDate() }
-        }
+          createdAt: { $gte: monthlyStart.toDate() },
+        },
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     const monthlyLabels = [];
@@ -258,7 +273,7 @@ exports.dashboardTotal = async (req, res) => {
       const key = date.format("YYYY-MM");
 
       monthlyLabels.push(label);
-      const match = monthlyOrdersData.find(item => item._id === key);
+      const match = monthlyOrdersData.find((item) => item._id === key);
       monthlyOrders.push(match ? match.count : 0);
     }
 
@@ -267,16 +282,16 @@ exports.dashboardTotal = async (req, res) => {
     const weeklyOrdersData = await Order.aggregate([
       {
         $match: {
-          createdAt: { $gte: weeklyStart.toDate() }
-        }
+          createdAt: { $gte: weeklyStart.toDate() },
+        },
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     const weeklyLabels = [];
@@ -288,7 +303,7 @@ exports.dashboardTotal = async (req, res) => {
       const key = date.format("YYYY-MM-DD");
 
       weeklyLabels.push(label);
-      const match = weeklyOrdersData.find(item => item._id === key);
+      const match = weeklyOrdersData.find((item) => item._id === key);
       weeklyOrders.push(match ? match.count : 0);
     }
 
@@ -297,22 +312,16 @@ exports.dashboardTotal = async (req, res) => {
       totalProducts,
       totalOrders,
       OrderPending,
-     
-      OrderShipped,
+      razorPay,
+      OrderReturn,
       OrderDelivered,
       OrderCancelled,
-    
       totalAmount,
       COD,
-      
-       CREDIT_CARD,
-       BINANCE,
-        PAYUMONEY,
-
       monthlyLabels,
       monthlyOrders,
       weeklyLabels,
-      weeklyOrders
+      weeklyOrders,
     };
 
     res.status(200).json({
@@ -320,7 +329,6 @@ exports.dashboardTotal = async (req, res) => {
       message: "Dashboard counts fetched successfully",
       data: response,
     });
-
   } catch (error) {
     console.error("Error fetching dashboard counts:", error);
     res.status(500).json({
@@ -331,12 +339,10 @@ exports.dashboardTotal = async (req, res) => {
   }
 };
 
-
-
 exports.me = async (req, res) => {
   try {
     const user = await Admin.findById(req.user._id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     res.status(200).json({ status: true, data: user });
   } catch (error) {
@@ -346,32 +352,33 @@ exports.me = async (req, res) => {
 
 exports.updateMe = async (req, res) => {
   try {
-    const user = await Admin.findByIdAndUpdate(req.user._id, req.body, { new: true });
-       // Handle image update
-       if (req.file) {
-         const newImagePath = `Uploads/${req.file.filename}`;
-   
-         // Remove old image if it exists
-         if (user.image) {
-           const oldFilePath = path.join(__dirname, "../", user.image);
-           if (fs.existsSync(oldFilePath)) {
-             fs.unlinkSync(oldFilePath); // Deletes the old image
-           }
-         }
-   
-         // Assign new image path
-         user.image = newImagePath;
-       }
-   
-       // Update other fields
-       Object.assign(user, req.body);
-       await user.save();
-   
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const user = await Admin.findByIdAndUpdate(req.user._id, req.body, {
+      new: true,
+    });
+    // Handle image update
+    if (req.file) {
+      const newImagePath = `Uploads/${req.file.filename}`;
+
+      // Remove old image if it exists
+      if (user.image) {
+        const oldFilePath = path.join(__dirname, "../", user.image);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath); // Deletes the old image
+        }
+      }
+
+      // Assign new image path
+      user.image = newImagePath;
+    }
+
+    // Update other fields
+    Object.assign(user, req.body);
+    await user.save();
+
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     res.status(200).json({ status: true, data: user });
   } catch (err) {
     res.status(400).json({ status: false, error: err.message });
   }
 };
-
