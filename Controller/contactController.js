@@ -1,11 +1,11 @@
 const Contact = require("../Model/contact");
 exports.CreateContact = async (req, res) => {
   try {
-    const { userId, first_name, last_name, email, mobileno, description } =
+    const {  first_name, last_name, email, mobileno, description } =
       req.body;
 
     if (
-      !userId ||
+   
       !first_name ||
       !last_name ||
       !email ||
@@ -16,7 +16,7 @@ exports.CreateContact = async (req, res) => {
     }
 
     const newContact = new Contact({
-      userId,
+      
       first_name,
       last_name,
       email,

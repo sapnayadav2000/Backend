@@ -109,7 +109,7 @@ exports.DeleteSubCategory = async (req, res) => {
 
 exports.GetAllSubCategory = async (req, res) => {
   try {
-    const SubCat = await SubCategory.find().sort({ created: -1 });
+    const SubCat = await SubCategory.find().sort({ createdAt: -1 });
 
     if (SubCat.length == 0) {
       return res

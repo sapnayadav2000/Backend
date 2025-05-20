@@ -4,33 +4,33 @@ exports.createAppPolicy = async (req, res) => {
   try {
     const {
       about,
-      aboutHindi,
+ 
       aboutTitle,
-      aboutTitleHindi,
+
       termsAndCondition,
-      termsAndConditionHindi,
+
       termsAndConditionTitle,
-      termsAndConditionTitleHindi,
+
       privacyPolicy,
-      privacyPolicyHindi,
+
       privacyPolicyTitle,
-      privacyPolicyTitleHindi,
+ 
       status,
     } = req.body;
 
     const newPolicy = new AppPolicy({
       about,
-      aboutHindi,
+
       aboutTitle,
-      aboutTitleHindi,
+
       termsAndCondition,
-      termsAndConditionHindi,
+  
       termsAndConditionTitle,
-      termsAndConditionTitleHindi,
+  
       privacyPolicy,
-      privacyPolicyHindi,
+ 
       privacyPolicyTitle,
-      privacyPolicyTitleHindi,
+ 
       status: status || "Active",
     });
 
@@ -67,22 +67,19 @@ exports.getAppPolicy = async (req, res) => {
       responseData = {
         English: appPolicy.privacyPolicy || "No data",
         Title: appPolicy.privacyPolicyTitle || "No title",
-        Hindi: appPolicy.privacyPolicyHindi || "No data",
-        HindiTitle: appPolicy.privacyPolicyTitleHindi || "No data",
+     
       };
     } else if (req.query.data === "termsAndCondition") {
       responseData = {
         English: appPolicy.termsAndCondition || "No data",
         Title: appPolicy.termsAndConditionTitle || "No title",
-        Hindi: appPolicy.termsAndConditionHindi || "No data",
-        HindiTitle: appPolicy.termsAndConditionTitleHindi || "No data",
+     
       };
     } else if (req.query.data === "about") {
       responseData = {
         English: appPolicy.about || "No data",
         Title: appPolicy.aboutTitle || "No title",
-        Hindi: appPolicy.aboutHindi || "No data",
-        HindiTitle: appPolicy.aboutTitleHindi || "No data",
+      
       };
     } else {
       return res
@@ -109,17 +106,17 @@ exports.updateAppPolicy = async (req, res) => {
   try {
     const {
       about,
-      aboutHindi,
+
       aboutTitle,
-      aboutTitleHindi,
+   
       termsAndCondition,
-      termsAndConditionHindi,
+
       termsAndConditionTitle,
-      termsAndConditionTitleHindi,
+ 
       privacyPolicy,
-      privacyPolicyHindi,
+ 
       privacyPolicyTitle,
-      privacyPolicyTitleHindi,
+
       status,
     } = req.body;
 
@@ -127,17 +124,17 @@ exports.updateAppPolicy = async (req, res) => {
       {},
       {
         about,
-        aboutHindi,
+  
         aboutTitle,
-        aboutTitleHindi,
+    
         termsAndCondition,
-        termsAndConditionHindi,
+  
         termsAndConditionTitle,
-        termsAndConditionTitleHindi,
+    
         privacyPolicy,
-        privacyPolicyHindi,
+     
         privacyPolicyTitle,
-        privacyPolicyTitleHindi,
+    
         status,
       },
       { new: true, upsert: true }

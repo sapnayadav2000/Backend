@@ -37,6 +37,11 @@ const OrderProductSchema = new mongoose.Schema({
     default: null,
     trim: true
   },
+    orderStatus: {
+    type: String,
+    enum: ['Pending', 'Dispatch', 'Shipped', 'Delivered', 'Cancel', 'Return'],
+    default: 'Pending'
+  },
   extraVal: {
     type: String,
     default: null,

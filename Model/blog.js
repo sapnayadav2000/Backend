@@ -28,8 +28,8 @@ const blogModel = new mongoose.Schema(
         },
         status: {
             type: String,
-            default: "Published",
-            enum: ["Published", "Draft", "Archived"],
+            default: "Active",
+            enum: ["Active", "Inactive"],
           
         },
     },

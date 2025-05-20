@@ -5,7 +5,7 @@ const ContactSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
-      required: true,
+    
     },
     first_name: {
       type: String,

@@ -250,96 +250,72 @@ const getOrderById = async (req, res) => {
   }
 };
 
-// const orderCancel = async (req, res) => {
-//   try {
-//     const { OrderId } = req.params;
 
-//     // Find the order by OrderId
-//     const order = await Order.findById(OrderId);
-//     if (!order) {
-//       return res.status(404).json({ error: "Order not found" });
-//     }
-
-//     // Check if the order can be canceled based on order status
-//     if (!["Pending", "Dispatch"].includes(order.orderStatus)) {
-//       return res.status(400).json({ error: "Order cannot be canceled at this stage" });
-//     }
-
-//     // Find all OrderProduct items related to this order
-//     const orderProducts = await OrderProduct.find({ orderId: OrderId });
-//     if (!orderProducts || orderProducts.length === 0) {
-//       return res.status(404).json({ error: "No products found for this order" });
-//     }
-
-//     // Restore stock for each product variant
-
-//     // Update the order status to 'Cancelled'
-//     order.orderStatus = "Cancel";
-//     await order.save();
-
-//     res.json({ message: "Order cancelled successfully", order });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
 const orderCancel = async (req, res) => {
   try {
-    const { OrderId } = req.params;
+    const { orderId, productId } = req.params;
 
-    // Find the order by OrderId
-    const order = await Order.findById(OrderId);
+    // 1. Validate order existence
+    const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // Check if the order can be canceled based on order status
-    if (!["Pending", "Dispatch"].includes(order.orderStatus)) {
-      return res
-        .status(400)
-        .json({ error: "Order cannot be canceled at this stage" });
+    // 2. Find the specific OrderProduct
+    const orderProduct = await OrderProduct.findOne({
+      orderId,
+      productId,
+    });
+
+    if (!orderProduct) {
+      return res.status(404).json({ error: "Order product not found" });
     }
 
-    // Find all OrderProduct items related to this order
-    const orderProducts = await OrderProduct.find({ orderId: OrderId });
-    if (!orderProducts || orderProducts.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No products found for this order" });
+    // 3. Only allow cancellation if status is Pending or Dispatch
+    if (!["Pending", "Dispatch"].includes(orderProduct.orderStatus)) {
+      return res.status(400).json({ error: "Order cannot be canceled at this stage" });
     }
 
-    // Step 1: Restore stock for each product variant (size-specific)
-    for (let orderProduct of orderProducts) {
-      const product = await Product.findById(orderProduct.productId);
-      if (product) {
-        // Find the productKey matching the size of the product
-        const productKey = product.productkey.find(
-          (key) => key.Size === orderProduct.size
-        );
+    // 4. Update the orderStatus of this product to "Cancel"
+    orderProduct.orderStatus = "Cancel";
+    await orderProduct.save();
 
-        if (productKey) {
-          // Restore the stock by adding the quantity back to the respective size
-          productKey.Quantity += orderProduct.quantity;
-          await product.save();
-        } else {
-          console.error(`Size not found for product: ${product.name}`);
-        }
-      } else {
-        console.error(`Product not found: ${orderProduct.productId}`);
+    // 5. Restore stock from Product collection (correct model)
+    const productDoc = await Product.findById(productId);
+    if (productDoc && Array.isArray(productDoc.productkey)) {
+      const productKey = productDoc.productkey.find(
+        (key) => key.Size === orderProduct.size
+      );
+
+      if (productKey) {
+        productKey.Quantity += orderProduct.quantity;
+        await productDoc.save();
       }
     }
 
-    // Step 2: Update the order status to 'Cancelled'
-    order.orderStatus = "Cancel";
-    await order.save();
+    // 6. Check if all products are canceled for the order, then cancel whole order
+    const remainingItems = await OrderProduct.find({
+      orderId,
+      orderStatus: { $ne: "Cancel" }
+    });
 
-    // Respond with success message
-    res.json({ message: "Order cancelled successfully", order });
+    if (remainingItems.length === 0) {
+      order.orderStatus = "Cancel";
+      await order.save();
+    }
+
+    res.json({
+      message: "Product cancelled from order successfully",
+      cancelledProduct: orderProduct,
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
 
 const trackOrders = async (req, res) => {
   try {
@@ -369,24 +345,38 @@ const trackOrders = async (req, res) => {
 // Fetch details for a specific order when clicked by the user
 const trackOrderDetails = async (req, res) => {
   try {
-    const { userId, orderId } = req.params;
+    const { userId, orderId, orderProductId } = req.params;
 
-    const orderProducts = await OrderProduct.find({ userId, orderId })
-      .populate("productId")
-      .populate("orderId");
-
-    if (!orderProducts || orderProducts.length === 0) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Order product not found" });
+    if (!userId || !orderId) {
+      return res.status(400).json({ message: 'Missing userId or orderId' });
     }
 
-    res.status(200).json({ status: true, orderProducts });
+    // Validate that the order belongs to the user
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found for this user' });
+    }
+
+    // Build query for order products
+    const query = { orderId };
+    if (orderProductId) {
+      query._id = orderProductId;
+    }
+
+    // Fetch order product(s) and populate product details
+    const orderProducts = await OrderProduct.find(query).populate('productId');
+
+    if (!orderProducts || orderProducts.length === 0) {
+      return res.status(404).json({ message: 'Order product(s) not found' });
+    }
+
+    res.status(200).json({ success: true, data: orderProducts });
   } catch (error) {
-    console.error("Error fetching order product details:", error);
-    res.status(500).json({ status: false, message: "Internal server error" });
+    console.error('Error fetching order product details:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // Function to retrieve all orders
 const getAllOrders = async (req, res) => {
@@ -609,6 +599,49 @@ const verifyPayment = async (req, res) => {
   }
 };
 
+const updatedOrders = async (req, res) => {
+  try {
+    const { orderId, orderProductId } = req.params;
+    const { orderStatus } = req.body;
+
+    console.log('orderId:', orderId);
+    console.log('orderProductId:', orderProductId);
+    console.log('orderStatus:', orderStatus);
+
+    // First verify order exists
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Find the OrderProduct document by orderProductId and orderId to ensure it belongs to this order
+    const orderProduct = await OrderProduct.findOne({
+      _id: orderProductId,
+      orderId: orderId
+    });
+
+    if (!orderProduct) {
+      return res.status(404).json({ error: 'Order product not found' });
+    }
+
+    // Update status
+    orderProduct.orderStatus = orderStatus || orderProduct.orderStatus;
+    orderProduct.updatedAt = Date.now();
+
+    await orderProduct.save();
+
+    res.status(200).json({
+      message: 'Order product status updated successfully',
+      updatedOrderProduct: orderProduct,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
 module.exports = {
   createOrder,
   getOrderById,
@@ -617,4 +650,5 @@ module.exports = {
   getAllOrders,
   trackOrderDetails,
   verifyPayment,
+  updatedOrders
 };

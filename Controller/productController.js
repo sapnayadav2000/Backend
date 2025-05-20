@@ -52,6 +52,7 @@ exports.CreateProduct = async (req, res) => {
 
 exports.GetAllProduct = async (req, res) => {
   try {
+    
     const product = await Product.find()
       .populate("category") // Populate category field, only returning 'name'
       .populate("subCategory") // Populate subcategory field, only returning 'name'
@@ -387,44 +388,7 @@ exports.getProductBySubCategory = async (req, res) => {
   }
 };
 
-// exports.searchProduct = async (req, res) => {
-//   try {
-//     const { product_name } = req.body;
 
-//     if (!product_name) {
-//       return res.status(400).send({
-//         success: false,
-//         message: 'Provide the product name to search'
-//       });
-//     }
-
-//     const products = await Product.find({
-//       name: { $regex: product_name, $options: 'i' }
-//     })
-//       .populate('category')
-//       .populate('subCategory')
-//     console.log("products",products);
-
-//     if (products.length > 0) {
-//       return res.status(200).send({
-//         success: true,
-//         message: 'Products found successfully',
-//         data: products
-//       });
-//     } else {
-//       return res.status(404).send({
-//         success: false,
-//         message: 'No matching products found'
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Search error:', error);
-//     res.status(500).send({
-//       success: false,
-//       message: 'Internal Server Error'
-//     });
-//   }
-// };
 
 exports.searchProduct = async (req, res) => {
   try {

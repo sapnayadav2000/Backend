@@ -15,26 +15,41 @@ exports.create = async (req, res) => {
   }
 };
 
+
+
 exports.getAll = async (req, res) => {
   try {
-    const banner = await Banner.find().sort({ createdAt: -1 });
+    const currentDate = new Date();
 
-    if (banner.length === 0) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Banner Not Found" });
+    // Auto-deactivate expired banners
+    await Banner.updateMany(
+      { endDate: { $lt: currentDate }, status: "Active" },
+      { $set: { status: "Inactive" } }
+    );
+
+    // Build filter
+    let filter = {};
+    if (req.user && req.user.userType !== "Admin") {
+      filter = {
+        status: "Active",
+        startDate: { $lte: currentDate },
+        endDate: { $gte: currentDate },
+      };
     }
 
+    const banner = await Banner.find(filter).sort({ createdAt: -1 });
+
     res.status(200).json({
-      status: "true",
+      status: true,
       message: "Banner Fetch Successfully",
       data: banner,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ status: false, error: err.message });
   }
 };
+
+
 
 exports.getById = async (req, res) => {
   try {

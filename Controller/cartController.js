@@ -84,7 +84,7 @@ exports.addToCart = async (req, res) => {
     await cart.save();
     res
       .status(200)
-      .json({ success: true, message: "Cart updated successfully", cart });
+      .json({ success: true, message: "Cart added successfully", cart });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ success: false, message: err.message });
@@ -118,15 +118,15 @@ exports.getCart = async (req, res) => {
 };
 exports.cartCount = async (req, res) => {
   try {
-    const { userId } = req.query;
-   
-    if (!userId) {
+    const { userId, sessionId } = req.query;
+
+    if (!userId && !sessionId) {
       return res
         .status(400)
-        .json({ success: false, message: "Please provide the userId" });
+        .json({ success: false, message: "Please provide either userId or sessionId" });
     }
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne(userId ? { userId } : { sessionId });
 
     if (!cart || !cart.items || cart.items.length === 0) {
       return res
@@ -138,13 +138,12 @@ exports.cartCount = async (req, res) => {
       (total, item) => total + item.quantity,
       0
     );
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Cart count retrieved",
-        data: totalCount,
-      });
+
+    return res.status(200).json({
+      success: true,
+      message: "Cart count retrieved",
+      data: totalCount,
+    });
   } catch (error) {
     console.error("Error in cartCount:", error);
     return res
@@ -152,6 +151,7 @@ exports.cartCount = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
 
 exports.removeCartItem = async (req, res) => {
   const { cartId, itemId } = req.params;

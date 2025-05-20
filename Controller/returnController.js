@@ -29,16 +29,11 @@ exports.requestReturn = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    if (order._id.toString() !== orderProduct.orderId._id.toString()) {
-      return res
-        .status(400)
-        .json({ message: "Order ID does not match with product" });
-    }
+    // Use orderProduct.orderStatus instead of order.orderStatus
+    console.log("OrderProduct orderStatus:", orderProduct.orderStatus);
 
-    if (order.orderStatus !== "Delivered") {
-      return res
-        .status(400)
-        .json({ message: "Product is not eligible for return" });
+    if (orderProduct.orderStatus !== "Delivered") {
+      return res.status(400).json({ message: "Product is not eligible for return" });
     }
 
     const product = orderProduct.productId;
@@ -47,11 +42,9 @@ exports.requestReturn = async (req, res) => {
       !product.refundPolicies ||
       !product.refundPolicies.returnable
     ) {
-      return res
-        .status(400)
-        .json({
-          message: "This product is non-returnable according to refund policy",
-        });
+      return res.status(400).json({
+        message: "This product is non-returnable according to refund policy",
+      });
     }
 
     const existingReturn = await Return.findOne({
@@ -62,21 +55,30 @@ exports.requestReturn = async (req, res) => {
     });
 
     if (existingReturn) {
-      return res
-        .status(400)
-        .json({ message: "A return request for this product already exists" });
+      return res.status(400).json({
+        message: "A return request for this product already exists",
+      });
+    }
+
+    // Determine deliveryDate — fallback to order.updatedAt if deliveryDate missing
+    const deliveryDate = order.deliveryDate || order.updatedAt || order.createdAt;
+    if (!deliveryDate) {
+      return res.status(400).json({ message: "Delivery date not found; cannot process return" });
     }
 
     const returnDaysAllowed = product.refundPolicies.returnWindow || 30;
-    const returnDeadline = new Date(order.deliveryDate);
+    const returnDeadline = new Date(deliveryDate);
     returnDeadline.setDate(returnDeadline.getDate() + returnDaysAllowed);
 
+    console.log("Return deadline:", returnDeadline);
+
     if (new Date() > returnDeadline) {
-      return res
-        .status(400)
-        .json({ message: "Return window has expired for this product" });
+      return res.status(400).json({
+        message: "Return window has expired for this product",
+      });
     }
 
+    // Create a new return request
     const newReturn = new Return({
       orderId: order._id,
       orderProductId,
@@ -90,13 +92,15 @@ exports.requestReturn = async (req, res) => {
     res.status(200).json({
       message: "Return request successfully submitted",
       return: newReturn,
-      orderProductDetails: orderProduct, // <-- include populated orderProduct details here
+      orderProductDetails: orderProduct,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error in requestReturn:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 exports.GetAll = async (req, res) => {
   try {

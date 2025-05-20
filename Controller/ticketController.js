@@ -14,13 +14,8 @@ exports.createTicket = async (req, res) => {
       return res.status(400).json({ error: "Invalid Product ID provided" });
     }
 
-    // Check if the associated order is delivered
-    const order = product.orderId; // The Order associated with the OrderProduct
-    if (order.orderStatus !== "Return") {
-      return res
-        .status(400)
-        .json({ error: "Product must be Return before returning" });
-    }
+
+ 
 
     // Create the return ticket if the product is delivered
     const ticket = await Ticket.create({

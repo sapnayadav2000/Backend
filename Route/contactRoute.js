@@ -3,7 +3,7 @@ const router = express.Router();
 const ContactController=require('../Controller/contactController')
 const {isAuth}=require('../Middleware/auth')
 
-router.route("/").post(isAuth,ContactController.CreateContact);
+router.route("/").post(ContactController.CreateContact);
 
 router.route('/user/:userId').get(isAuth, ContactController.GetContactsByUser);
   

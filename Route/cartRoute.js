@@ -17,7 +17,7 @@ router
 
 router
 .route('/')
-.get(isAuth,cartController.cartCount)
+.get(cartController.cartCount)
 
 router.delete('/:cartId/item/:itemId',cartController.removeCartItem);
 router.get('/:cartId/item/:itemId',isAuth, cartController.UpdatedQunatity);
