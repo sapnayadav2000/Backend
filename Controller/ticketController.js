@@ -35,7 +35,7 @@ exports.createTicket = async (req, res) => {
 
 exports.getAllTickets = async (req, res) => {
   try {
-    const tickets = await Ticket.find();
+    const tickets = await Ticket.find().sort({ createdAt: -1 });
     res.json(tickets);
   } catch (err) {
     res.status(500).json({ error: err.message });

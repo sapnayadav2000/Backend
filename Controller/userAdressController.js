@@ -65,7 +65,7 @@ exports.CreateUserAddress = async (req, res) => {
 
 exports.GetAllAddresses = async (req, res) => {
   try {
-    const addresses = await UserAddress.find().sort({ created: -1 });
+    const addresses = await UserAddress.find().sort({ createdAt: -1 });
 
     if (!addresses.length) {
       return res

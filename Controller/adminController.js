@@ -5,6 +5,7 @@ const User = require("../Model/user");
 const Product = require("../model/product");
 
 const Order = require("../Model/orders");
+const OrderProduct=require("../Model/orderProduct")
 const moment = require("moment");
 
 const path = require("path");
@@ -231,11 +232,11 @@ exports.dashboardTotal = async (req, res) => {
       paymentStatus: "pending",
     });
 
-    const OrderReturn = await Order.countDocuments({ orderStatus: "Return" });
-    const OrderDelivered = await Order.countDocuments({
+    const OrderReturn = await OrderProduct.countDocuments({ orderStatus: "Return" });
+    const OrderDelivered = await OrderProduct.countDocuments({
       orderStatus: "Delivered",
     });
-    const OrderCancelled = await Order.countDocuments({
+    const OrderCancelled = await OrderProduct.countDocuments({
       orderStatus: "Cancel",
     });
 

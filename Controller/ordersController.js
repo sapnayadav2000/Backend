@@ -356,7 +356,7 @@ const trackOrderDetails = async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: 'Order not found for this user' });
     }
-
+  console.log('order',order);
     // Build query for order products
     const query = { orderId };
     if (orderProductId) {
@@ -385,7 +385,7 @@ const getAllOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("userId", "name email mobileNo") // Populate user details
 
-      .populate("userAddress", "alternateAddress"); // Populate user address and alternate address (if available)
+      .populate("userAddress", "firstName lastName"); // Populate user address and alternate address (if available)
 
     const ordersWithProducts = await Promise.all(
       orders.map(async (order) => {
@@ -604,27 +604,36 @@ const updatedOrders = async (req, res) => {
     const { orderId, orderProductId } = req.params;
     const { orderStatus } = req.body;
 
-    console.log('orderId:', orderId);
-    console.log('orderProductId:', orderProductId);
-    console.log('orderStatus:', orderStatus);
-
-    // First verify order exists
+    // Find the order by ID
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Find the OrderProduct document by orderProductId and orderId to ensure it belongs to this order
+    // Update the main order status if a new status is provided
+    if (orderStatus) {
+      order.orderStatus = orderStatus;
+
+      // If orderStatus is 'Delivered', mark paymentStatus as 'Paid'
+      if (orderStatus === 'Delivered' && order.paymentStatus !== 'Paid') {
+        order.paymentStatus = 'Paid';
+      }
+
+      // Save the updated order
+      await order.save();
+    }
+
+    // Find the order product document
     const orderProduct = await OrderProduct.findOne({
       _id: orderProductId,
-      orderId: orderId
+      orderId: orderId,
     });
 
     if (!orderProduct) {
       return res.status(404).json({ error: 'Order product not found' });
     }
 
-    // Update status
+    // Update orderProduct status as well
     orderProduct.orderStatus = orderStatus || orderProduct.orderStatus;
     orderProduct.updatedAt = Date.now();
 
@@ -638,6 +647,7 @@ const updatedOrders = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 

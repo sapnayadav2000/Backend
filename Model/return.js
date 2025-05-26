@@ -23,21 +23,14 @@ const ReturnSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Active", "Inactive"],
-    default: "Active",
+    enum: ["Pending","Approve", "Reject"],
+    default: "Pending",
   },
   requestDate: {
     type: Date,
     default: Date.now
   },
-  approvalDate: {
-    type: Date,
-    default: null
-  },
-  rejectionDate: {
-    type: Date,
-    default: null
-  },
+
   description: {
     type: String,
     default: null,

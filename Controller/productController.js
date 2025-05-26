@@ -318,7 +318,7 @@ exports.getProductByCategory = async (req, res) => {
     }
     let productsArray = await Product.find({ category: id }).populate(
       "category"
-    );
+    ).sort({ createdAt: -1 });
     if (productsArray.length > 0) {
       const modifiedArray = productsArray.map((element) => {
         const productObj = element.toObject();
@@ -356,7 +356,7 @@ exports.getProductBySubCategory = async (req, res) => {
     const { id } = req.body;
     // console.log(req.query);
     // return
-    let productsArray = await Product.find({ id });
+    let productsArray = await Product.find({ id }).sort({ createdAt: -1 });
     if (productsArray.length > 0) {
       const modifiedArray = productsArray.map((element, index) => {
         if (element.image) {
