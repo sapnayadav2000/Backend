@@ -36,7 +36,7 @@ exports.addToWishlist = async (req, res) => {
 exports.getWishlist = async (req, res) => {
   try {
     const wishlist = await Wishlist.findOne({ userId: req.params.userId })
-      .populate("products.productId", "name price images productkey")
+      .populate("products.productId", "name price images productkey Sortdescription")
       .exec();
 
     if (!wishlist) {
@@ -124,7 +124,7 @@ exports.getAllWishlist = async (req, res) => {
       })
       .populate({
         path: "products.productId",
-        select: "name price images productkey",
+        select: "name price images productkey Sortdescription",
       })
       .exec(); // ✅ Ensure execution of query
 
@@ -172,7 +172,7 @@ exports.MyWhislist = async (req, res) => {
       })
       .populate({
         path: "products.productId",
-        select: "name price images productkey",
+        select: "name price images productkey Sortdescription",
       });
 
     if (!wishlist) {
