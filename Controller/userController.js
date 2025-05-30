@@ -8,12 +8,12 @@ const jwt = require("jsonwebtoken");
 // Register a new admin
 exports.register = async (req, res) => {
   try {
-    const { name, email, mobileNo, address, city, state, pincode, password } =
+    const { firstName,lastName, email, mobileNo, address, city, state, pincode, password } =
       req.body;
 
     // Validate required fields
     if (
-      !name ||
+      !firstName || !lastName||
       !email ||
       !mobileNo ||
       !password ||
@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({
         status: false,
         message:
-          "Name, email, mobile number, address, city, state, pincode, and password are required.",
+          "firstName,lastName, email, mobile number, address, city, state, pincode, and password are required.",
       });
     }
 
@@ -43,7 +43,8 @@ exports.register = async (req, res) => {
 
     // Store user data in a temp collection (or Redis) for OTP verification
     const tempUser = {
-      name,
+      firstName,
+      lastName,
       email,
       mobileNo,
       address,

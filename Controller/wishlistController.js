@@ -172,7 +172,7 @@ exports.MyWhislist = async (req, res) => {
       })
       .populate({
         path: "products.productId",
-        select: "name price images productkey Sortdescription",
+        select: "name  Originalprice price images productkey Sortdescription",
       });
 
     if (!wishlist) {
