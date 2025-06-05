@@ -39,7 +39,7 @@ exports.addToCart = async (req, res) => {
       cart = new Cart({
         userId: userId || null,
         sessionId,
-        username: userDoc?.name || null,
+       username: userDoc ? `${userDoc.firstName || ''} ${userDoc.lastName || ''}`.trim() : null,
         items: [
           {
             productId,
@@ -283,7 +283,10 @@ exports.mergeCartToUser = async (req, res) => {
       // No cart for user: reassign session cart
       sessionCart.userId = userId;
       // sessionCart.sessionId = null;
-      sessionCart.username = req.user?.name || null;
+     sessionCart.username = req.user
+  ? `${req.user.firstName || ""} ${req.user.lastName || ""}`.trim()
+  : null;
+
 
       // Clean duplicates in session cart before saving
       const uniqueMap = new Map();
@@ -346,3 +349,82 @@ exports.mergeCartToUser = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// exports.mergeCartToUser = async (req, res) => {
+//   const { sessionId, userId } = req.body;
+
+//   if (!sessionId || !userId) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "Missing sessionId or userId" });
+//   }
+
+//   try {
+//     const sessionCart = await Cart.findOne({ sessionId });
+//     if (!sessionCart || sessionCart.items.length === 0) {
+//       return res
+//         .status(200)
+//         .json({ success: true, message: "No session cart to merge" });
+//     }
+
+//     let userCart = await Cart.findOne({ userId });
+
+//     if (!userCart) {
+//       // Reassign session cart to user
+//       sessionCart.userId = userId;
+//       sessionCart.username = req.user
+//         ? `${req.user.firstName || ""} ${req.user.lastName || ""}`.trim()
+//         : null;
+
+//       // De-duplicate session cart
+//       const uniqueMap = new Map();
+//       for (const item of sessionCart.items) {
+//         const key = `${item.productId}_${item.selectedSize}`;
+//         if (!uniqueMap.has(key)) {
+//           uniqueMap.set(key, item);
+//         } else {
+//           uniqueMap.get(key).quantity += item.quantity;
+//         }
+//       }
+
+//       sessionCart.items = [...uniqueMap.values()];
+//       sessionCart.totalItems = sessionCart.items.length;
+//       sessionCart.totalPrice = sessionCart.items.reduce(
+//         (sum, item) => sum + item.quantity * item.price,
+//         0
+//       );
+
+//       await sessionCart.save({ validateBeforeSave: false }); // ✅ avoid version conflict
+//     } else {
+//       // Merge items
+//       const itemMap = new Map();
+//       for (const item of userCart.items) {
+//         const key = `${item.productId}_${item.selectedSize}`;
+//         itemMap.set(key, item);
+//       }
+
+//       for (const item of sessionCart.items) {
+//         const key = `${item.productId}_${item.selectedSize}`;
+//         if (itemMap.has(key)) {
+//           itemMap.get(key).quantity += item.quantity;
+//         } else {
+//           itemMap.set(key, item);
+//         }
+//       }
+
+//       userCart.items = Array.from(itemMap.values());
+//       userCart.totalItems = userCart.items.length;
+//       userCart.totalPrice = userCart.items.reduce(
+//         (sum, item) => sum + item.quantity * item.price,
+//         0
+//       );
+
+//       await userCart.save({ validateBeforeSave: false }); // ✅ prevent __v conflict
+//     }
+
+//     return res.status(200).json({ success: true, message: "Cart merged successfully" });
+//   } catch (err) {
+//     console.error("Error merging carts:", err);
+//     return res.status(500).json({ success: false, message: err.message });
+//   }
+// };
